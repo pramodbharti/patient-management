@@ -3,7 +3,7 @@ package com.pm.patientservice.controller;
 import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
 import com.pm.patientservice.service.PatientService;
-import com.pm.patientservice.validators.CreatePatientValidationGroup;
+import com.pm.patientservice.dto.validators.CreatePatientValidationGroup;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.groups.Default;
