@@ -24,7 +24,7 @@ protobuf {
     }
     plugins {
         create("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.72.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
         }
     }
     generateProtoTasks {
@@ -57,9 +57,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    runtimeOnly("io.grpc:grpc-netty-shaded:1.72.0")
-    implementation("io.grpc:grpc-protobuf:1.72.0")
-    implementation("io.grpc:grpc-stub:1.72.0")
+    runtimeOnly("io.grpc:grpc-netty-shaded:1.69.0")
+    implementation("io.grpc:grpc-protobuf:1.69.0")
+    implementation("io.grpc:grpc-stub:1.69.0")
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
     implementation("com.google.protobuf:protobuf-java:4.29.1")
     implementation("net.devh:grpc-spring-boot-starter:3.1.0.RELEASE")
