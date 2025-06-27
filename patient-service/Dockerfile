@@ -6,13 +6,13 @@ COPY gradlew .
 COPY gradle/wrapper gradle/wrapper
 COPY build.gradle.kts settings.gradle.kts ./
 
-RUN ./gradlew dependencies --write-locks --no-daemon --no-build-cache
+RUN ./gradlew dependencies --write-locks --no-daemon
 
 # Copy application source
 COPY src ./src
 
 # Build the application
-RUN ./gradlew clean build --no-daemon --no-build-cache
+RUN ./gradlew clean build --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-jammy
