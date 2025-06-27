@@ -20,11 +20,12 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy built artifact
-COPY --from=builder /app/build/libs/patient-service-*.jar ./app.jar
+COPY --from=builder /app/build/libs/billing-service-*.jar ./app.jar
 
 # Production JVM options
 #ENV JAVA_OPTS="-XX:InitialRAMPercentage=75.0 -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Djava.security.egd=file:/dev/./urandom"
 
-EXPOSE 4000
+EXPOSE 4001
+EXPOSE 9001
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
