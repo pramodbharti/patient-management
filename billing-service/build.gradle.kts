@@ -1,5 +1,5 @@
 plugins {
-    java
+    id("java")
     id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.protobuf") version "0.9.5"
@@ -36,6 +36,23 @@ protobuf {
     }
 }
 
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude("**/*.proto")
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir("src/main/proto")
+        }
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -44,6 +61,8 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.72.0")
     implementation("io.grpc:grpc-stub:1.72.0")
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
+    implementation("com.google.protobuf:protobuf-java:4.29.1")
+    implementation("net.devh:grpc-spring-boot-starter:3.1.0.RELEASE")
 }
 
 tasks.withType<Test> {
