@@ -46,11 +46,11 @@ public class PatientService {
 
         log.info("[REDIS]: Cache miss for patients - fetching from database");
 
-        try {
-            Thread.sleep(2000);
-        }catch (InterruptedException e){
-            log.error("Error sleeping thread: {}", e.getMessage());
-        }
+//        try {
+//            Thread.sleep(2000);
+//        }catch (InterruptedException e){
+//            log.error("Error sleeping thread: {}", e.getMessage());
+//        }
 
         Pageable pageable = PageRequest.of(
                 page - 1,
