@@ -1,9 +1,10 @@
 package com.pm.patientservice.controller;
 
+import com.pm.patientservice.dto.PagedPatientResponseDTO;
 import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
-import com.pm.patientservice.service.PatientService;
 import com.pm.patientservice.dto.validators.CreatePatientValidationGroup;
+import com.pm.patientservice.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.groups.Default;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -24,10 +24,18 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    // http://localhost:4004/api/patients?page=1&size=10
     @GetMapping
     @Operation(summary = "Get all patients")
-    public ResponseEntity<List<PatientResponseDTO>> getPatients() {
-        return ResponseEntity.ok(patientService.getPatients());
+    public ResponseEntity<PagedPatientResponseDTO> getPatients(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "asc") String sort,
+            @RequestParam(defaultValue = "name") String field,
+            @RequestParam(defaultValue = "") String search
+    ) {
+        PagedPatientResponseDTO patients = patientService.getPatients(page, size, sort, field, search);
+        return ResponseEntity.ok(patients);
     }
 
     @PostMapping
