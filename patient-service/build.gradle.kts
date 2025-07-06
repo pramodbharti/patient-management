@@ -74,6 +74,11 @@ dependencies {
 
     //kafka
     implementation("org.springframework.kafka:spring-kafka")
+
+    //redis
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 tasks.withType<Test> {
