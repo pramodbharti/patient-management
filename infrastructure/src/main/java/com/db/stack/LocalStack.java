@@ -6,6 +6,8 @@ import software.amazon.awscdk.services.ec2.InstanceType;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.Protocol;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
+import software.amazon.awscdk.services.elasticache.CfnCacheCluster;
+import software.amazon.awscdk.services.elasticache.CfnSubnetGroup;
 import software.amazon.awscdk.services.logs.LogGroup;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.msk.CfnCluster;
@@ -22,6 +24,7 @@ public class LocalStack extends Stack {
 
     private final Vpc vpc;
     private final Cluster ecsCluster;
+    private final CfnCacheCluster elasticacheCluster;
 
     public LocalStack(final App scope, final String id, final StackProps props) {
         super(scope, id, props);
@@ -36,6 +39,7 @@ public class LocalStack extends Stack {
         CfnCluster mskCluster = createMskCluster();
 
         this.ecsCluster = createEcsCluster();
+        this.elasticacheCluster = createRedisCluster();
 
         FargateService authService = createFargateService(
                 "AuthService",
@@ -76,8 +80,10 @@ public class LocalStack extends Stack {
         patientService.getNode().addDependency(patientServiceDb);
         patientService.getNode().addDependency(billingService);
         patientService.getNode().addDependency(mskCluster);
+        patientService.getNode().addDependency(elasticacheCluster);
 
-        createApiGatewayService();
+        ApplicationLoadBalancedFargateService apiGateway = createApiGatewayService();
+        apiGateway.getNode().addDependency(elasticacheCluster);
     }
 
     private Cluster createEcsCluster() {
@@ -227,7 +233,7 @@ public class LocalStack extends Stack {
                 .build();
     }
 
-    private void createApiGatewayService() {
+    private ApplicationLoadBalancedFargateService createApiGatewayService() {
         String apiGatewayImageName = "api-gateway";
         FargateTaskDefinition taskDefinition = FargateTaskDefinition
                 .Builder
@@ -282,6 +288,27 @@ public class LocalStack extends Stack {
                         .build())
                 .build();
 
+        return apiGateway;
+    }
+
+    private CfnCacheCluster createRedisCluster() {
+        CfnSubnetGroup redisSubnetGroup = CfnSubnetGroup.Builder
+                .create(this, "RedisSubnetGroup")
+                .description("Redis/elasticache subnet group")
+                .subnetIds(vpc
+                        .getPrivateSubnets()
+                        .stream()
+                        .map(ISubnet::getSubnetId)
+                        .collect(Collectors.toList()))
+                .build();
+
+        return CfnCacheCluster.Builder.create(this, "RedisCluster")
+                .cacheNodeType("cache.t2.micro")
+                .engine("redis")
+                .numCacheNodes(1)
+                .cacheSubnetGroupName(redisSubnetGroup.getCacheSubnetGroupName())
+                .vpcSecurityGroupIds(List.of(vpc.getVpcDefaultSecurityGroup()))
+                .build();
     }
 
     public static void main(final String[] args) {
