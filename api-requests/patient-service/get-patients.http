@@ -1,4 +1,4 @@
 ### GET request to get all patients
-GET http://localhost:4004/api/patients?sort=asc&page=1
+GET http://lb-ce57bee5.elb.localhost.localstack.cloud:4004/api/patients?sort=asc&page=2
 Authorization: Bearer {{token}}
 ###
