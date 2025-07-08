@@ -199,6 +199,10 @@ public class LocalStack extends Stack {
 
         Map<String, String> containerEnvVars = new HashMap<>();
         containerEnvVars.put("SPRING_KAFKA_BOOTSTRAP_SERVERS", "localhost.localstack.cloud:4510, localhost.localstack.cloud:4511, localhost.localstack.cloud:4512");
+        containerEnvVars.put("SPRING_CACHE_TYPE", "redis");
+        containerEnvVars.put("SPRING_DATA_REDIS_HOST", elasticacheCluster.getAttrRedisEndpointAddress());
+        containerEnvVars.put("SPRING_DATA_REDIS_PORT", elasticacheCluster.getAttrRedisEndpointPort());
+
         if (envVars != null) {
             containerEnvVars.putAll(envVars);
         }
@@ -247,7 +251,9 @@ public class LocalStack extends Stack {
                 .image(ContainerImage.fromRegistry(apiGatewayImageName))
                 .environment(Map.of(
                         "SPRING_PROFILES_ACTIVE", "prod",
-                        "AUTH_SERVICE_URL", "http://auth-service.patient-management.local:4005"
+                        "AUTH_SERVICE_URL", "http://auth-service.patient-management.local:4005",
+                        "REDIS_HOST", elasticacheCluster.getAttrRedisEndpointAddress(),
+                        "REDIS_PORT", elasticacheCluster.getAttrRedisEndpointPort()
                 ))
                 .portMappings(List.of(4004)
                         .stream()
