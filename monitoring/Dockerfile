@@ -1,4 +1,2 @@
-FROM ubuntu:latest
-LABEL authors="db"
-
-ENTRYPOINT ["top", "-b"]
+FROM prom/prometheus:latest
+COPY prometheus-prod.yml /etc/prometheus/prometheus.yml
