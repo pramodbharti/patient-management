@@ -11,6 +11,7 @@ import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.msk.CfnCluster;
 import software.amazon.awscdk.services.rds.*;
 import software.amazon.awscdk.services.route53.CfnHealthCheck;
+import software.amazon.awscdk.services.servicediscovery.DnsRecordType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +69,7 @@ public class LocalStack extends Stack {
                 List.of(4000),
                 patientServiceDb,
                 Map.of(
-                        "BILLING_SERVICE_ADDRESS", "host.docker.internal",
+                        "BILLING_SERVICE_ADDRESS", "billing-service.patient-management.local",
                         "BILLING_SERVICE_GRPC_PORT", "9001"
                 ));
         patientService.getNode().addDependency(patientServiceDbHealthCheck);
@@ -218,12 +219,16 @@ public class LocalStack extends Stack {
                 .cluster(ecsCluster)
                 .taskDefinition(taskDefinition)
                 .assignPublicIp(false)
+                .cloudMapOptions(CloudMapOptions.builder()
+                        .name(imageName)
+                        .dnsRecordType(DnsRecordType.A)
+                        .build())
                 .serviceName(imageName)
                 .build();
     }
 
     private void createApiGatewayService() {
-
+        String apiGatewayImageName = "api-gateway";
         FargateTaskDefinition taskDefinition = FargateTaskDefinition
                 .Builder
                 .create(this, "APIGatewayTaskDefinition")
@@ -233,10 +238,10 @@ public class LocalStack extends Stack {
 
         ContainerDefinitionOptions containerOptions = ContainerDefinitionOptions
                 .builder()
-                .image(ContainerImage.fromRegistry("api-gateway"))
+                .image(ContainerImage.fromRegistry(apiGatewayImageName))
                 .environment(Map.of(
                         "SPRING_PROFILES_ACTIVE", "prod",
-                        "AUTH_SERVICE_URL", "http://host.docker.internal:4005"
+                        "AUTH_SERVICE_URL", "http://auth-service.patient-management.local:4005"
                 ))
                 .portMappings(List.of(4004)
                         .stream()
@@ -253,11 +258,11 @@ public class LocalStack extends Stack {
                                 .logGroup(LogGroup
                                         .Builder
                                         .create(this, "ApiGatewayLogGroup")
-                                        .logGroupName("/ecs/api-gateway")
+                                        .logGroupName("/ecs/" + apiGatewayImageName)
                                         .removalPolicy(RemovalPolicy.DESTROY)
                                         .retention(RetentionDays.ONE_DAY)
                                         .build())
-                                .streamPrefix("api-gateway")
+                                .streamPrefix(apiGatewayImageName)
                                 .build()))
                 .build();
 
@@ -266,10 +271,15 @@ public class LocalStack extends Stack {
         ApplicationLoadBalancedFargateService apiGateway
                 = ApplicationLoadBalancedFargateService.Builder.create(this, "APIGatewayService")
                 .cluster(ecsCluster)
-                .serviceName("api-gateway")
+                .serviceName(apiGatewayImageName)
                 .taskDefinition(taskDefinition)
                 .desiredCount(1)
                 .healthCheckGracePeriod(Duration.seconds(60))
+                .cloudMapOptions(CloudMapOptions
+                        .builder()
+                        .name(apiGatewayImageName)
+                        .dnsRecordType(DnsRecordType.A)
+                        .build())
                 .build();
 
     }
