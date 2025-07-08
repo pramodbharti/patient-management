@@ -63,6 +63,9 @@ dependencies {
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
     implementation("com.google.protobuf:protobuf-java:4.29.1")
     implementation("net.devh:grpc-spring-boot-starter:3.1.0.RELEASE")
+
+    //kafka
+    implementation("org.springframework.kafka:spring-kafka")
 }
 
 tasks.withType<Test> {

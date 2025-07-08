@@ -1,10 +1,11 @@
 ### POST request to create a new patient
 POST http://localhost:4004/api/patients
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Pramod Bharti Kafka",
-  "email": "kafka-test@example.com",
+  "email": "kafka_123-test@example.com",
   "address": "123, India",
   "dateOfBirth": "1995-09-09",
   "registeredDate": "2024-09-09"
