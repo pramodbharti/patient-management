@@ -132,10 +132,11 @@ public class LocalStack extends Stack {
     }
 
     private CfnCluster createMskCluster() {
+        int brokerCount = vpc.getAvailabilityZones().size();
         return CfnCluster.Builder.create(this, "MskCluster")
                 .clusterName("kafka-cluster")
                 .kafkaVersion("2.11.1")
-                .numberOfBrokerNodes(1)
+                .numberOfBrokerNodes(brokerCount)
                 .brokerNodeGroupInfo(CfnCluster
                         .BrokerNodeGroupInfoProperty
                         .builder()
