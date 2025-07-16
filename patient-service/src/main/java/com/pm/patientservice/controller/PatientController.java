@@ -11,7 +11,9 @@ import jakarta.validation.groups.Default;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -40,8 +42,10 @@ public class PatientController {
 
     @PostMapping
     @Operation(summary = "Create a new patient")
-    public ResponseEntity<PatientResponseDTO> createPatient(@Validated({Default.class, CreatePatientValidationGroup.class}) @RequestBody PatientRequestDTO patientRequestDTO) {
-        return ResponseEntity.ok(patientService.createPatient(patientRequestDTO));
+    public ResponseEntity<PatientResponseDTO> createPatient(@Validated({Default.class, CreatePatientValidationGroup.class}) @RequestBody PatientRequestDTO patientRequestDTO, UriComponentsBuilder ucb) {
+        PatientResponseDTO createdPatient = patientService.createPatient(patientRequestDTO);
+        URI locationOfNewPatient = ucb.path("patients/{id}").buildAndExpand(createdPatient.getId()).toUri();
+        return ResponseEntity.created(locationOfNewPatient).body(createdPatient);
     }
 
     @PutMapping("/{id}")
