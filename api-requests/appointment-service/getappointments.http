@@ -1,0 +1,3 @@
+### GET request to example server
+GET http://localhost:4006/appointments?startDate=2025-05-20T00:00:00&endDate=2025-05-21T23:59:59
+Content-Type: application/json
