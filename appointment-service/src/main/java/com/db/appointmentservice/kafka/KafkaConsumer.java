@@ -22,7 +22,7 @@ public class KafkaConsumer {
         this.cachedPatientRepository = cachedPatientRepository;
     }
 
-    @KafkaListener(topics = {"patient.created", "patient_updated"},
+    @KafkaListener(topics = {"patient.created", "patient.updated"},
             groupId = "appointment-service")
     public void consumeEvent(byte[] event) {
         try {
